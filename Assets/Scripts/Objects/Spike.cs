@@ -3,12 +3,13 @@ using UnityEngine;
 public class Spike : MonoBehaviour
 {
     public GameManager gameManager;
-    private AudioSource audioSource;
+
+    private DeathSound deathSound;
 
     private void Start()
     {
         gameManager = FindAnyObjectByType<GameManager>();
-        audioSource = GetComponent<AudioSource>();
+        deathSound = DeathSound.Instance;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -16,12 +17,12 @@ public class Spike : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             gameManager.BreakPlayer(other.gameObject);
-            audioSource.Play();
+            deathSound.PlayDeathSound();
         }
         else if (other.CompareTag("Draggable"))
         {
             gameManager.BreakCube(other.gameObject); // куб ломается
-            audioSource.Play();
+            deathSound.PlayDeathSound();
         }
     }
 }

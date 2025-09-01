@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 
+[ExecuteAlways]
 public class ButtonTrigger : MonoBehaviour
 {
     [Header("Plunger Movement")]
@@ -258,5 +259,11 @@ public class ButtonTrigger : MonoBehaviour
             if (sparks.isPlaying)
                 sparks.Stop();
         }
+    }
+
+    private void OnValidate()
+    {
+        UpdateMassLabel();
+        ApplyColorToLabel();
     }
 }
