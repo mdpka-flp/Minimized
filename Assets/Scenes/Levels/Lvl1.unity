@@ -1613,8 +1613,8 @@ MonoBehaviour:
   gameManager: {fileID: 1413229168}
   cubePiecePrefab: {fileID: 8197595535712861396, guid: 3f74eea194a7d184ebe3b63fee02998f, type: 3}
   playerPiecePrefab: {fileID: 8197595535712861396, guid: 3f74eea194a7d184ebe3b63fee02998f, type: 3}
-  minPieces: 5
-  maxPieces: 12
+  minPieces: 4
+  maxPieces: 7
   minSize: 0.2
   maxSize: 0.5
   force: 200
