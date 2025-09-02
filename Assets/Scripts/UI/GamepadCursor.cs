@@ -11,38 +11,42 @@ public class GamepadCursor : MonoBehaviour
     private Draggable heldObject;
 
     private Camera mainCam;
+    private Vector2 localOffset;
 
     void Start()
     {
         mainCam = Camera.main;
+        localOffset = Vector2.zero;
     }
 
     void Update()
     {
-        // Получаем ввод с правого стика
+        // Ввод с правого стика
         float x = Input.GetAxis("Joystick Right Stick Horizontal");
         float y = -Input.GetAxis("Joystick Right Stick Vertical");
 
-        // Проверка зажат ли LT (Trigger ось < 0 — это левый триггер, обычно на оси 3 или 9)
-        float lt = Input.GetAxis("Triggers"); // если ты уже использовал её для спринта
-
+        // Проверка зажат ли LT для ускорения
+        float lt = Input.GetAxis("Triggers");
         float currentSpeed = (lt < -0.1f) ? boostedSpeed : moveSpeed;
 
-        Vector3 movement = new Vector3(x, y, 0f) * currentSpeed * Time.deltaTime;
-        transform.position += movement;
+        // Обновляем локальный оффсет
+        localOffset += new Vector2(x, y) * currentSpeed * Time.deltaTime;
 
-        // Ограничим курсор рамками экрана камеры
-        Vector3 viewPos = mainCam.WorldToViewportPoint(transform.position);
-        viewPos.x = Mathf.Clamp01(viewPos.x);
-        viewPos.y = Mathf.Clamp01(viewPos.y);
-        transform.position = mainCam.ViewportToWorldPoint(viewPos);
+        // Ограничим курсор в пределах камеры
+        Vector2 worldPos = (Vector2)mainCam.transform.position + localOffset;
+        Vector2 viewportPos = mainCam.WorldToViewportPoint(worldPos);
+        viewportPos.x = Mathf.Clamp01(viewportPos.x);
+        viewportPos.y = Mathf.Clamp01(viewportPos.y);
+        worldPos = mainCam.ViewportToWorldPoint(viewportPos);
 
-        // Наведение
-        Collider2D hit = Physics2D.OverlapCircle(transform.position, grabDistance, draggableMask);
+        // Пересчитаем локальный оффсет
+        localOffset = worldPos - (Vector2)mainCam.transform.position;
 
+        // Наведение на объекты
+        Collider2D hit = Physics2D.OverlapCircle(worldPos, grabDistance, draggableMask);
         currentTarget = hit ? hit.GetComponent<Draggable>() : null;
 
-        // Взять / отпустить
+        // Взятие/отпуск объектов
         if (Input.GetKeyDown(KeyCode.Joystick1Button2)) // X кнопка
         {
             if (heldObject == null && currentTarget != null)
@@ -56,5 +60,11 @@ public class GamepadCursor : MonoBehaviour
                 heldObject = null;
             }
         }
+    }
+
+    void LateUpdate()
+    {
+        // Обновляем позицию курсора
+        transform.position = (Vector2)mainCam.transform.position + localOffset;
     }
 }

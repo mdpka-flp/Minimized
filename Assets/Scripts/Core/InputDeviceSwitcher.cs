@@ -1,5 +1,7 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class InputDeviceSwitcher : MonoBehaviour
 {
@@ -16,7 +18,6 @@ public class InputDeviceSwitcher : MonoBehaviour
     private float lastMouseActivityTime;
     private float lastKeyboardInputTime;
     private float lastGamepadInputTime;
-    private bool initialSwitchDone = false;
 
     public event System.Action<bool> OnInputModeChanged;
 
@@ -27,16 +28,46 @@ public class InputDeviceSwitcher : MonoBehaviour
         KeyCode.Space, KeyCode.LeftShift, KeyCode.E, KeyCode.Q
     };
 
-    void Start()
+    private void Awake()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void Start()
     {
         IsUsingGamepad = IsGamepadConnected();
         lastMouseActivityTime = Time.unscaledTime;
         lastKeyboardInputTime = Time.unscaledTime;
         lastGamepadInputTime = IsUsingGamepad ? Time.unscaledTime : -1000f;
+
+        // Запускаем корутину поиска курсора
+        StartCoroutine(FindCursorUntilFound());
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Перезапускаем поиск курсора при загрузке новой сцены
+        StartCoroutine(FindCursorUntilFound());
+    }
+
+    private IEnumerator FindCursorUntilFound()
+    {
+        // Ждём, пока GamepadCursor реально появится
+        while (gamepadCursor == null)
+        {
+            yield return null; // ждём 1 кадр
+            gamepadCursor = FindObjectOfType<GamepadCursor>()?.gameObject;
+        }
+
         UpdateCursorState();
     }
 
-    void Update()
+    private void Update()
     {
         UpdateInputTimes();
         CheckForSwitch();
@@ -52,26 +83,20 @@ public class InputDeviceSwitcher : MonoBehaviour
     void CheckForSwitch()
     {
         bool mouseKeyboardActive = Time.unscaledTime - lastMouseActivityTime < switchDelay ||
-                                 Time.unscaledTime - lastKeyboardInputTime < switchDelay;
+                                   Time.unscaledTime - lastKeyboardInputTime < switchDelay;
 
         bool gamepadActive = Time.unscaledTime - lastGamepadInputTime < switchDelay;
 
         if (mouseKeyboardActive && !gamepadActive && IsUsingGamepad)
-        {
             SetInputMode(false);
-        }
         else if (gamepadActive && !mouseKeyboardActive && !IsUsingGamepad && IsGamepadConnected())
-        {
             SetInputMode(true);
-        }
     }
 
     void UpdateCursorState()
     {
         if (gamepadCursor != null)
-        {
             gamepadCursor.SetActive(IsUsingGamepad);
-        }
 
         Cursor.visible = !IsUsingGamepad || !hideSystemCursorInGamepadMode;
         Cursor.lockState = IsUsingGamepad ? CursorLockMode.Locked : CursorLockMode.None;
@@ -79,17 +104,13 @@ public class InputDeviceSwitcher : MonoBehaviour
 
     bool IsMouseActive()
     {
-        // Проверяем движение мыши
         if (Mathf.Abs(Input.GetAxis("Mouse X")) > 0.01f ||
             Mathf.Abs(Input.GetAxis("Mouse Y")) > 0.01f)
             return true;
 
-        // Проверяем нажатие кнопок мыши (левая, правая, средняя)
         for (int i = 0; i < 3; i++)
-        {
             if (Input.GetMouseButton(i))
                 return true;
-        }
 
         return false;
     }
@@ -97,22 +118,18 @@ public class InputDeviceSwitcher : MonoBehaviour
     bool IsKeyboardInput()
     {
         foreach (KeyCode key in monitoredKeys)
-        {
-            if (Input.GetKey(key)) return true;
-        }
+            if (Input.GetKey(key))
+                return true;
+
         return false;
     }
 
     bool IsGamepadInput()
     {
-        // Проверка кнопок
         for (int i = 0; i <= 19; i++)
-        {
             if (Input.GetKey((KeyCode)((int)KeyCode.JoystickButton0 + i)))
                 return true;
-        }
 
-        // Проверка осей с deadzone
         Vector2 leftStick = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         Vector2 rightStick = new Vector2(Input.GetAxis("Joystick Right Stick Horizontal"),
                                         Input.GetAxis("Joystick Right Stick Vertical"));
@@ -126,10 +143,8 @@ public class InputDeviceSwitcher : MonoBehaviour
     {
         string[] names = Input.GetJoystickNames();
         foreach (var name in names)
-        {
             if (!string.IsNullOrEmpty(name))
                 return true;
-        }
         return false;
     }
 

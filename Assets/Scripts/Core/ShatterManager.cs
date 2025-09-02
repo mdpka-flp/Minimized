@@ -69,26 +69,30 @@ public class ShatterManager : MonoBehaviour
         Color originalColor = sr.color;
         Vector3 originalScale = piece.transform.localScale;
 
-        // Можно добавить случайную задержку, чтобы кусочки исчезали не одновременно
         float delay = Random.Range(0f, 0.2f);
         yield return new WaitForSeconds(delay);
 
         while (elapsed < duration)
         {
+            if (piece == null || sr == null) // проверка
+                yield break;
+
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
 
             // Альфа Fade
             sr.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1 - t);
 
-            // Scale Fade (кусочек уменьшается)
+            // Scale Fade
             piece.transform.localScale = Vector3.Lerp(originalScale, Vector3.zero, t);
 
             yield return null;
         }
 
-        Destroy(piece);
+        if (piece != null)
+            Destroy(piece);
     }
+
 
     private IEnumerator RestartAfterDelay(float delay)
     {
