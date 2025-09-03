@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using System;
 
 public class LevelEditor : MonoBehaviour
@@ -17,6 +18,9 @@ public class LevelEditor : MonoBehaviour
 
     [Tooltip("Layer on which objects can be interacted with")]
     public LayerMask objectLayer;
+
+    [Tooltip("Layer that blocks spawning (objects on this layer prevent spawning)")]
+    public LayerMask blockingLayer;
 
     private GameObject previewObject;
     private SpriteRenderer previewSpriteRenderer;
@@ -54,6 +58,13 @@ public class LevelEditor : MonoBehaviour
         }
     }
 
+    public void ChangeObjectToSpawn(GameObject newObject)
+    {
+        objectToSpawn = newObject;
+        SetPreviewAppearance();
+        SetEraserMode(false);
+    }
+
     private void CreatePreviewObject()
     {
         if (previewPrefab != null)
@@ -86,7 +97,12 @@ public class LevelEditor : MonoBehaviour
 
     private void SetPreviewAppearance()
     {
-        if (previewSpriteRenderer != null)
+        previewSpriteRenderer.sprite = objectToSpawn.GetComponent<SpriteRenderer>().sprite;
+        if (previewSpriteRenderer == null)
+        {
+            Debug.LogWarning("Preview object does not have a SpriteRenderer component.");
+        }
+        else
         {
             Color c = previewSpriteRenderer.color;
             c.a = 0.5f;
@@ -114,6 +130,11 @@ public class LevelEditor : MonoBehaviour
 
     private void SpawnPrefabAtMousePosition()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         if (objectToSpawn == null || mainCamera == null)
         {
             Debug.LogWarning("Prefab or MainCamera is not assigned.");
@@ -121,6 +142,13 @@ public class LevelEditor : MonoBehaviour
         }
 
         Vector3 spawnPos = previewObject != null ? previewObject.transform.position : Vector3.zero;
+
+        Collider2D[] blockingColliders = Physics2D.OverlapPointAll(spawnPos, blockingLayer);
+        if (blockingColliders.Length > 0)
+        {
+            Debug.Log("Spawn blocked by object on blocking layer.");
+            return;
+        }
 
         Collider2D[] collidersAtPos = Physics2D.OverlapPointAll(spawnPos, objectLayer);
         if (collidersAtPos.Length > 0)
@@ -190,12 +218,7 @@ public class LevelEditor : MonoBehaviour
         {
             Sprite originalSprite = null;
 
-            if (previewPrefab != null)
-            {
-                var sr = previewPrefab.GetComponent<SpriteRenderer>();
-                if (sr != null) originalSprite = sr.sprite;
-            }
-            else if (objectToSpawn != null)
+            if (objectToSpawn != null)
             {
                 var sr = objectToSpawn.GetComponent<SpriteRenderer>();
                 if (sr != null) originalSprite = sr.sprite;
