@@ -8,6 +8,8 @@ public class ShatterManager : MonoBehaviour
     public GameObject cubePiecePrefab;
     public GameObject playerPiecePrefab;
 
+    public static ShatterManager Instance;
+
     [Header("Осколки")]
     public int minPieces = 5;
     public int maxPieces = 12;
@@ -15,6 +17,20 @@ public class ShatterManager : MonoBehaviour
     public float maxSize = 0.5f;
     public float force = 200f;
     public float lifetime = 1f;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // сохраняем навсегда
+        }
+        else if (Instance != this)
+        {
+            DestroyImmediate(gameObject); // мгновенно убиваем дубликат
+            return;
+        }
+    }
 
     // Генерация осколков куба
     public void BreakCube(Vector3 position, Color color)
@@ -35,7 +51,9 @@ public class ShatterManager : MonoBehaviour
             SpawnPiece(playerPiecePrefab, position, Color.white);
         }
 
-        StartCoroutine(RestartAfterDelay(lifetime + 0.1f));
+        // проверка на живой объект перед запуском корутины
+        if (this != null && gameObject != null)
+            StartCoroutine(RestartAfterDelay(lifetime + 0.1f));
     }
 
     private void SpawnPiece(GameObject prefab, Vector3 position, Color color)
@@ -59,8 +77,9 @@ public class ShatterManager : MonoBehaviour
         rb.AddForce(direction * speed);
         rb.angularVelocity = Random.Range(-360f, 360f);
 
-        // Плавное исчезновение
-        StartCoroutine(FadeOut(piece, sr, lifetime));
+        // проверка на живой объект перед запуском корутины
+        if (this != null && gameObject != null)
+            StartCoroutine(FadeOut(piece, sr, lifetime));
     }
 
     private IEnumerator FadeOut(GameObject piece, SpriteRenderer sr, float duration)
@@ -92,7 +111,6 @@ public class ShatterManager : MonoBehaviour
         if (piece != null)
             Destroy(piece);
     }
-
 
     private IEnumerator RestartAfterDelay(float delay)
     {

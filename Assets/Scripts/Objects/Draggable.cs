@@ -38,9 +38,6 @@ public class Draggable : MonoBehaviour
     public Color Green = new Color(0.69f, 1f, 0.65f);
     public Color Blue = new Color(0.45f, 0.47f, 1f);
 
-    private InputDeviceSwitcher inputSwitcher;
-    private bool wasUsingGamepadLastFrame;
-
     [Header("Scale Settings")]
     public float scaleSpeed = 5f;
     public float massSpeed = 5f;
@@ -64,13 +61,6 @@ public class Draggable : MonoBehaviour
         col = GetComponent<Collider2D>();
         cam = Camera.main;
 
-        inputSwitcher = FindObjectOfType<InputDeviceSwitcher>();
-        if (inputSwitcher != null)
-        {
-            inputSwitcher.OnInputModeChanged += OnInputModeChanged;
-            wasUsingGamepadLastFrame = inputSwitcher.IsUsingGamepad;
-        }
-
         if (collisionMode == CollisionMode.AlwaysDisable)
         {
             SetCollisionWithPlayer(false);
@@ -83,51 +73,13 @@ public class Draggable : MonoBehaviour
         InitializeColor();
     }
 
-    void OnDestroy()
-    {
-        if (inputSwitcher != null)
-        {
-            inputSwitcher.OnInputModeChanged -= OnInputModeChanged;
-        }
-    }
-
     void Update()
     {
-        if (inputSwitcher != null)
-        {
-            bool isUsingGamepadNow = inputSwitcher.IsUsingGamepad;
-
-            if (isUsingGamepadNow != wasUsingGamepadLastFrame && isBeingHeld)
-            {
-                StartCoroutine(DelayedRelease());
-            }
-
-            wasUsingGamepadLastFrame = isUsingGamepadNow;
-        }
-
         if (isBeingHeld)
         {
             float scroll = 0f;
 
-            // Обработка мыши (только при использовании мыши)
-            if (inputSwitcher == null || !inputSwitcher.IsUsingGamepad)
-            {
-                scroll = Input.GetAxis("Mouse ScrollWheel");
-            }
-            // Обработка геймпада (только при использовании геймпада)
-            else if (inputSwitcher.IsUsingGamepad)
-            {
-                // LB - уменьшение
-                if (Input.GetButton("LeftBumper"))
-                {
-                    scroll -= gamepadScaleStep * gamepadScaleSpeed * Time.deltaTime;
-                }
-                // RB - увеличение
-                if (Input.GetButton("RightBumper"))
-                {
-                    scroll += gamepadScaleStep * gamepadScaleSpeed * Time.deltaTime;
-                }
-            }
+            scroll = Input.GetAxis("Mouse ScrollWheel");
 
             // Применение изменений
             if (Mathf.Abs(scroll) > 0.01f)
@@ -148,12 +100,6 @@ public class Draggable : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isBeingHeld && followTarget != null &&
-            inputSwitcher != null && inputSwitcher.IsUsingGamepad)
-        {
-            Vector2 direction = (followTarget.position - transform.position);
-            rb.linearVelocity = direction * followSpeed;
-        }
 
         // Увеличиваем размер
         transform.localScale = Vector3.Lerp(
@@ -187,7 +133,6 @@ public class Draggable : MonoBehaviour
     // По клику мышью на объект
     void OnMouseDown()
     {
-        if (inputSwitcher != null && inputSwitcher.IsUsingGamepad) return;
         if (isBeingHeld) return;
 
         Vector2 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
@@ -212,8 +157,6 @@ public class Draggable : MonoBehaviour
     // При передвижении мыши меняем позицию jointна позицию мышки
     void OnMouseDrag()
     {
-        if (inputSwitcher != null && inputSwitcher.IsUsingGamepad) return;
-
         if (mouseJoint != null)
         {
             Vector2 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
@@ -224,47 +167,6 @@ public class Draggable : MonoBehaviour
     // Когда отпустили ЛКМ
     void OnMouseUp()
     {
-        if (inputSwitcher != null && inputSwitcher.IsUsingGamepad) return;
-
-        ReleaseObject();
-    }
-
-    // Подбор объекта с геймпада
-    public void Grab(Transform target)
-    {
-        if (inputSwitcher != null && !inputSwitcher.IsUsingGamepad) return;
-        if (target == null || rb == null || mouseJoint != null) return;
-
-        followTarget = target;
-        isBeingHeld = true;
-        rb.gravityScale = 0f;
-
-        if (collisionMode == CollisionMode.DisableWhenHeld)
-        {
-            SetCollisionWithPlayer(false);
-        }
-    }
-
-    // Отпускаем объект с геймпада
-    public void Release()
-    {
-        if (inputSwitcher != null && !inputSwitcher.IsUsingGamepad) return;
-
-        ReleaseObject();
-    }
-
-    // Отпускаем объект если изменилось устройство ввода
-    private void OnInputModeChanged(bool isGamepadMode)
-    {
-        if (isBeingHeld)
-        {
-            StartCoroutine(DelayedRelease());
-        }
-    }
-
-    private IEnumerator DelayedRelease()
-    {
-        yield return new WaitForSeconds(0.1f);
         ReleaseObject();
     }
 
