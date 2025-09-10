@@ -148,8 +148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613e314f578844d42b37dc0883471249, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gamepadCursor: {fileID: 220893491}
-  switchDelay: 0.2
 --- !u!4 &146564747
 Transform:
   m_ObjectHideFlags: 0
@@ -195,12 +193,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a6ec8186db2dd418c2cdf42be8b1a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  boostedSpeed: 10
-  draggableMask:
-    serializedVersion: 2
-    m_Bits: 64
-  grabDistance: 0.5
 --- !u!4 &220893493
 Transform:
   m_ObjectHideFlags: 0
@@ -268,7 +260,7 @@ SpriteRenderer:
   m_Size: {x: 9.44, y: 9.44}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &400849013
@@ -374,8 +366,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openedColor: {r: 0.7012957, g: 1, b: 0.6556604, a: 1}
   closedColor: {r: 1, g: 0.6915521, b: 0.654902, a: 1}
+  TeleportType: 1
   teleportTarget: {fileID: 937289158}
-  Completed: 0
+  SceneName: Lvl2
+  Active: 0
 --- !u!61 &400849017
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1005,6 +999,19 @@ MonoBehaviour:
   ignoreCollisionWith:
     serializedVersion: 2
     m_Bits: 0
+  itsColor: 1
+  Object: {fileID: 0}
+  Red: {r: 1, g: 0.53, b: 0.53, a: 1}
+  Green: {r: 0.69, g: 1, b: 0.65, a: 1}
+  Blue: {r: 0.45, g: 0.47, b: 1, a: 1}
+  scaleSpeed: 5
+  massSpeed: 5
+  minScale: 1
+  maxScale: 10
+  minMass: 1
+  maxMass: 55
+  gamepadScaleStep: 0.1
+  gamepadScaleSpeed: 2
 --- !u!1 &843698491
 GameObject:
   m_ObjectHideFlags: 0
@@ -1322,6 +1329,19 @@ MonoBehaviour:
   ignoreCollisionWith:
     serializedVersion: 2
     m_Bits: 0
+  itsColor: 1
+  Object: {fileID: 0}
+  Red: {r: 1, g: 0.53, b: 0.53, a: 1}
+  Green: {r: 0.69, g: 1, b: 0.65, a: 1}
+  Blue: {r: 0.45, g: 0.47, b: 1, a: 1}
+  scaleSpeed: 5
+  massSpeed: 5
+  minScale: 1
+  maxScale: 10
+  minMass: 1
+  maxMass: 55
+  gamepadScaleStep: 0.1
+  gamepadScaleSpeed: 2
 --- !u!1 &1074500937
 GameObject:
   m_ObjectHideFlags: 0
@@ -1844,7 +1864,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: f9e1e51427f9f4b4490e267871e66b73, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1939,7 +1959,9 @@ MonoBehaviour:
   speed: 0
   groundCheckPoint: {fileID: 843698492}
   groundCheckDistance: 0.1
-  groundTag: Jumpable
+  groundCheckRadius: 0.2
+  gameManager: {fileID: 0}
+  isDead: 0
 --- !u!1001 &981524453216881854
 PrefabInstance:
   m_ObjectHideFlags: 0

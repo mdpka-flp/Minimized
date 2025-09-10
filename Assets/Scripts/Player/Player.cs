@@ -1,3 +1,4 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,36 +22,131 @@ public class Player : MonoBehaviour
     public float groundCheckDistance = 0.1f;
     public float groundCheckRadius = 0.2f;
 
+    [Header("Shear & Stratch")]
+    public SpriteRenderer spriteRenderer;
+    private Material playerMat;
+    public float shearSpeed = 10f; // скорость сглаживания
+    private float currentShear = 0f; // текущее значение (сглаженное)
+    public float stretchSpeed = 10f;
+    private float currentStretch = 1f;
+
+    [Header("Wall Slide")]
+    private bool isWallSliding;
+    private float wallSlideSpeed = 2f;
+
     private bool isGrounded;
     private Collider2D lastGroundCollider;
     public GameManager gameManager;
 
     public bool isDead = false;
 
+    private bool IsTouchingWall()
+    {
+        float direction = Mathf.Sign(Horizontal);
+        float extraWidth = 0.05f; // небольшое смещение, чтобы не залипать
+
+        // Делаем BoxCast равный размеру коллайдера игрока
+        RaycastHit2D hit = Physics2D.BoxCast(
+            playerCollider.bounds.center,
+            playerCollider.bounds.size,
+            0f,
+            Vector2.right * direction,
+            extraWidth,
+            LayerMask.GetMask("Ground") // убедись, что стены на этом слое
+        );
+
+        return hit.collider != null && !hit.collider.isTrigger;
+    }
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        playerMat = spriteRenderer.material;
     }
 
     void Update()
     {
-        Horizontal = Input.GetAxis("Horizontal");
-        triggerValue = Input.GetAxis("Triggers");
+        Movement();
+        Shear();
+        Stretch();
+        GroundHits();
+        Jump();
+    }
 
-        speed = (triggerValue > 0.1f || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+    private bool IsBelowPlayer(Collider2D hit)
+    {
+        float hitTop = hit.bounds.max.y; // Верхняя граница коллайдера земли
+        float playerBottom = playerCollider.bounds.min.y; // Нижняя граница игрока
+
+        float tolerance = 0.05f; // Допустимое расстояние
+        return (playerBottom - hitTop) > -tolerance; // Проверка положения
+    }
+
+    private void FixedUpdate()
+    {
+        float targetX = Horizontal * speed * 10f;
+
+        // Если в воздухе и прижат к стене — обнуляем горизонтальную скорость
+        if (!isGrounded && Mathf.Abs(Horizontal) > 0.1f && IsTouchingWall())
+        {
+            targetX = 0f;
+        }
+
+        rb.linearVelocity = new Vector2(targetX, rb.linearVelocity.y);
+    }
+
+
+
+    private void OnDrawGizmosSelected()
+    {
+        if (groundCheckPoint != null)
+        {
+            Gizmos.color = Color.green;
+            // Рисуем куб вместо сферы
+            Gizmos.DrawWireCube(
+                groundCheckPoint.position,
+                new Vector2(1, 1)
+            );
+        }
+    }
+
+    private void Movement()
+    {
+        Horizontal = Input.GetAxis("Horizontal");
+
+        speed = (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             ? SprintSpeed
             : NormalSpeed;
 
         jumpForce = JumpForce;
+    }
 
+    private void Jump()
+    {
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Joystick1Button0)) && isGrounded)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            gameManager.RestartLevel();
+        }
+    }
+
+    private void GroundHits()
+    {
         isGrounded = false;
         lastGroundCollider = null;
 
-        // Создаём сферу для проверки стоит ли игрок на земле
-        Collider2D[] groundHits = Physics2D.OverlapCircleAll(
+        // Создаём квадрат для проверки стоит ли игрок на земле
+        Collider2D[] groundHits = Physics2D.OverlapBoxAll(
             groundCheckPoint.position,
-            groundCheckRadius
+            new Vector2(1, 1),
+            0f
         );
 
         foreach (Collider2D hit in groundHits)
@@ -65,7 +161,6 @@ public class Player : MonoBehaviour
             }
         }
 
-
         if (isGrounded && lastGroundCollider != null)
         {
             Draggable draggable = lastGroundCollider.GetComponent<Draggable>();
@@ -74,40 +169,52 @@ public class Player : MonoBehaviour
                 isGrounded = false;
             }
         }
-
-        // Прыжок
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Joystick1Button0)) && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            gameManager.RestartLevel();
-        }
     }
 
-    private bool IsBelowPlayer(Collider2D hit)
+    private void Shear()
     {
-        float hitTop = hit.bounds.max.y; // Верхняя граница коллайдера земли
-        float playerBottom = playerCollider.bounds.min.y; // Нижняя граница игрока
+        float targetShear;
 
-        float tolerance = 0.05f; // Допустимое расстояние
-        return (playerBottom - hitTop) > -tolerance; // Проверка положения
-    }
-
-    private void FixedUpdate()
-    {
-        Vector2 targetVelocity = new Vector2(Horizontal * speed * 10f, rb.linearVelocity.y);
-        rb.linearVelocity = targetVelocity;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (groundCheckPoint != null)
+        // Если скорость игрока близка к нулю, не показываем анимацию shear
+        if (Mathf.Abs(rb.linearVelocity.x) < 0.1f)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
+            targetShear = 0f;
         }
+        else
+        {
+            targetShear = Mathf.Clamp(Horizontal * 0.2f, -0.2f, 0.2f);
+        }
+
+        currentShear = Mathf.Lerp(currentShear, targetShear, Time.deltaTime * shearSpeed);
+        playerMat.SetFloat("_Shear", currentShear);
+    }
+
+    // Растягивание по вертикали при прыжке
+    private void Stretch()
+    {
+        float stretchTarget = 1f;
+
+        // если игрок прыгает вверх
+        if (rb.linearVelocity.y > 0.1f)
+        {
+            stretchTarget = 1.1f; // растягиваем
+            stretchSpeed = 10;
+        }
+        // если игрок падает
+        else if (rb.linearVelocity.y < -0.1f)
+        {
+            stretchTarget = 0.9f; // сжимаем
+            stretchSpeed = 5;
+        }
+        // иначе игрок на земле
+        else
+        {
+            stretchTarget = 1f;
+            stretchSpeed = 10;
+        }
+
+        // плавное приближение к целевому значению
+        currentStretch = Mathf.Lerp(currentStretch, stretchTarget, Time.deltaTime * stretchSpeed);
+        playerMat.SetFloat("_Stretch", currentStretch);
     }
 }
