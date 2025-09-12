@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro; // если используешь TextMeshPro
+using UnityEngine.Localization.Settings;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,6 +17,7 @@ public class ButtonManager : MonoBehaviour
     public GameObject LevelsPanel;
     public GameObject SettingsPanel;
     public GameObject ExitPanel;
+    public GameObject LanguagePanel;
 
     // Существующие методы
     public void Play()
@@ -47,6 +49,7 @@ public class ButtonManager : MonoBehaviour
         LevelsPanel.SetActive(false);
         SettingsPanel.SetActive(false);
         ExitPanel.SetActive(false);
+        LanguagePanel.SetActive(false);
         ClearLevelButtons();
     }
 
@@ -127,5 +130,20 @@ public class ButtonManager : MonoBehaviour
     private void LoadLevel(string levelName)
     {
         SceneManager.LoadScene(levelName);
+    }
+
+    public void LanguageSettings()
+    {
+        LanguagePanel.SetActive(true);
+    }
+
+    public void SwitchToEnglish()
+    {
+        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[0];
+    }
+
+    public void SwitchToRussian()
+    {
+        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[1];
     }
 }
