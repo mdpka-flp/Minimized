@@ -1,4 +1,4 @@
-using UnityEditor.Experimental.GraphView;
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -32,7 +32,6 @@ public class Player : MonoBehaviour
 
     [Header("Wall Slide")]
     private bool isWallSliding;
-    private float wallSlideSpeed = 2f;
 
     private bool isGrounded;
     private Collider2D lastGroundCollider;
@@ -99,7 +98,7 @@ public class Player : MonoBehaviour
     }
 
 
-
+    /*
     private void OnDrawGizmosSelected()
     {
         if (groundCheckPoint != null)
@@ -111,7 +110,7 @@ public class Player : MonoBehaviour
                 new Vector2(1, 1)
             );
         }
-    }
+    }*/
 
     private void Movement()
     {
@@ -182,7 +181,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            targetShear = Mathf.Clamp(Horizontal * 0.2f, -0.2f, 0.2f);
+            targetShear = Mathf.Clamp(Horizontal * 0.1f, -0.1f, 0.1f);
         }
 
         currentShear = Mathf.Lerp(currentShear, targetShear, Time.deltaTime * shearSpeed);
@@ -197,13 +196,13 @@ public class Player : MonoBehaviour
         // если игрок прыгает вверх
         if (rb.linearVelocity.y > 0.1f)
         {
-            stretchTarget = 1.1f; // растягиваем
+            stretchTarget = 1.15f; // растягиваем
             stretchSpeed = 10;
         }
         // если игрок падает
         else if (rb.linearVelocity.y < -0.1f)
         {
-            stretchTarget = 0.9f; // сжимаем
+            stretchTarget = 0.85f; // сжимаем
             stretchSpeed = 5;
         }
         // иначе игрок на земле

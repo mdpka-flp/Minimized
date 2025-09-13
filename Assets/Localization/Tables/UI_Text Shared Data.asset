@@ -51,45 +51,6 @@ MonoBehaviour:
     m_Key: Volume
     m_Metadata:
       m_Items: []
-  - m_Id: 152874371829760
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/FullScreenText/Dropdown
-      FULLSCREEN MODE
-    m_Metadata:
-      m_Items: []
-  - m_Id: 152883284725760
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/FullScreenText/Dropdown
-      FULLSCREEN MODE 1
-    m_Metadata:
-      m_Items: []
-  - m_Id: 152892856127488
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/FullScreenText/Dropdown
-      FULLSCREEN MODE 2
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153211413516288
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/QualityText/Dropdown QUALITY
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153224818511872
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/QualityText/Dropdown QUALITY
-      1
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153233689464832
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/QualityText/Dropdown QUALITY
-      2
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153338677088256
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/PostProcessingText/Dropdown
-      POST PROCESSING
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153346289750016
-    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/PostProcessingText/Dropdown
-      POST PROCESSING 1
-    m_Metadata:
-      m_Items: []
   - m_Id: 154586335727616
     m_Key: Text "Are you sure you want to leave?"
     m_Metadata:
@@ -100,6 +61,45 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 154852372041728
     m_Key: Stay in the game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 542892701569024
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/FullScreenText/Dropdown
+      FULLSCREEN MODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 542911185866752
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/FullScreenText/Dropdown
+      FULLSCREEN MODE 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 542921969422336
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/FullScreenText/Dropdown
+      FULLSCREEN MODE 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544254021652480
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/QualityText/Dropdown QUALITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544264826179584
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/QualityText/Dropdown QUALITY
+      1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544273734881280
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/QualityText/Dropdown QUALITY
+      2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544865240797184
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/PostProcessingText/Dropdown
+      POST PROCESSING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544874808004608
+    m_Key: Menu/Canvas/Settings Panel/Scroll View/Viewport/PostProcessingText/Dropdown
+      POST PROCESSING 1
     m_Metadata:
       m_Items: []
   m_Metadata:

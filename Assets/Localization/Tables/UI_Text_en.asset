@@ -58,10 +58,6 @@ MonoBehaviour:
     m_Localized: Stay
     m_Metadata:
       m_Items: []
-  - m_Id: 152874371829760
-    m_Localized: On
-    m_Metadata:
-      m_Items: []
   - m_Id: 154783728062464
     m_Localized: Leave
     m_Metadata:
@@ -70,31 +66,35 @@ MonoBehaviour:
     m_Localized: ARE YOU SURE YOU WANT TO LEAVE?!??!?!?!
     m_Metadata:
       m_Items: []
-  - m_Id: 152883284725760
-    m_Localized: Off
-    m_Metadata:
-      m_Items: []
-  - m_Id: 152892856127488
-    m_Localized: Windowed
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153211413516288
-    m_Localized: Low
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153224818511872
-    m_Localized: Medium
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153233689464832
-    m_Localized: High
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153338677088256
+  - m_Id: 542892701569024
     m_Localized: On
     m_Metadata:
       m_Items: []
-  - m_Id: 153346289750016
+  - m_Id: 542911185866752
+    m_Localized: Off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 542921969422336
+    m_Localized: Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544254021652480
+    m_Localized: Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544264826179584
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544273734881280
+    m_Localized: High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544865240797184
+    m_Localized: On
+    m_Metadata:
+      m_Items: []
+  - m_Id: 544874808004608
     m_Localized: Off
     m_Metadata:
       m_Items: []

@@ -1746,7 +1746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   applicationID: 1412440962638020748
-  details: Main Menu
+  details: 
   largeImage: mini
   largeText: Playing Minimized
 --- !u!1 &1706555675
@@ -2129,12 +2129,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1460193040411445625, guid: cdddffeb1c3aacd4a9f0ac50ae8a0f2f, type: 3}
+      propertyPath: isDead
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1460193040411445625, guid: cdddffeb1c3aacd4a9f0ac50ae8a0f2f, type: 3}
+      propertyPath: shearSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1460193040411445625, guid: cdddffeb1c3aacd4a9f0ac50ae8a0f2f, type: 3}
       propertyPath: gameManager
       value: 
       objectReference: {fileID: 1413229168}
     - target: {fileID: 1460193040411445625, guid: cdddffeb1c3aacd4a9f0ac50ae8a0f2f, type: 3}
       propertyPath: stretchSpeed
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1460193040411445625, guid: cdddffeb1c3aacd4a9f0ac50ae8a0f2f, type: 3}
       propertyPath: spriteRenderer

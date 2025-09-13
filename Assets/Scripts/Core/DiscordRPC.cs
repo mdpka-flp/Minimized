@@ -22,7 +22,7 @@ public class DiscordRPC : MonoBehaviour
             instanceExists = true;
             DontDestroyOnLoad(gameObject);
         }
-        else if (FindObjectsOfType(GetType()).Length > 1)
+        else if (FindObjectsByType(GetType(), FindObjectsSortMode.None).Length > 1)
         {
             Destroy(gameObject);
         }

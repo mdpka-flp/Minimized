@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Rendering;
+using System.Linq;
 
 public class GraphicsSettings : MonoBehaviour
 {
@@ -62,6 +63,12 @@ public class GraphicsSettings : MonoBehaviour
                 filteredResolutions.Add(res);
             }
         }
+
+        // Сортируем разрешения от большего к меньшему
+        filteredResolutions = filteredResolutions
+            .OrderByDescending(r => r.width)
+            .ThenByDescending(r => r.height)
+            .ToList();
 
         resolutionDropdown.ClearOptions();
 

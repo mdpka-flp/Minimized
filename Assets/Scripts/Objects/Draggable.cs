@@ -53,7 +53,7 @@ public class Draggable : MonoBehaviour
     private Vector3 targetScale;
     private float targetMass;
     private float scaleMultiplier = 1.05f;
-    private float massMultiplier = 2.2f;
+    //private float massMultiplier = 2.2f;
 
     void Start()
     {
