@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private Collider2D playerCollider;
     private float Horizontal;
     float triggerValue;
@@ -33,8 +33,8 @@ public class Player : MonoBehaviour
     [Header("Wall Slide")]
     private bool isWallSliding;
 
-    private bool isGrounded;
-    private Collider2D lastGroundCollider;
+    public bool isGrounded;
+    public Collider2D lastGroundCollider;
     public GameManager gameManager;
 
     public bool isDead = false;
@@ -57,13 +57,13 @@ public class Player : MonoBehaviour
         return hit.collider != null && !hit.collider.isTrigger;
     }
 
-
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerMat = spriteRenderer.material;
+        //rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     void Update()
@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
         Jump();
     }
 
-    private bool IsBelowPlayer(Collider2D hit)
+    public bool IsBelowPlayer(Collider2D hit)
     {
         float hitTop = hit.bounds.max.y; // Верхняя граница коллайдера земли
         float playerBottom = playerCollider.bounds.min.y; // Нижняя граница игрока

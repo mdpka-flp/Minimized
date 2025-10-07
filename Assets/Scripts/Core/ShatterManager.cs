@@ -45,7 +45,7 @@ public class ShatterManager : MonoBehaviour
     // Генерация осколков игрока
     public void BreakPlayer(Vector3 position)
     {
-        int pieces = Random.Range(minPieces + 3, maxPieces + 5); // больше кусочков
+        int pieces = Random.Range(minPieces, maxPieces);
         for (int i = 0; i < pieces; i++)
         {
             SpawnPiece(playerPiecePrefab, position, Color.white);

@@ -71,6 +71,8 @@ public class Draggable : MonoBehaviour
 
         ClampScaleAndMass();
         InitializeColor();
+
+        //rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     void Update()
@@ -221,5 +223,10 @@ public class Draggable : MonoBehaviour
         {
             Object.color = Blue;
         }
+    }
+
+    private void OnValidate()
+    {
+        InitializeColor();
     }
 }
