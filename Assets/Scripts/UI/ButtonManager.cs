@@ -146,4 +146,17 @@ public class ButtonManager : MonoBehaviour
     {
         LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[1];
     }
+
+    public void SwitchLanguage(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                SwitchToEnglish();
+                break;
+            case 1:
+                SwitchToRussian();
+                break;
+        }
+    }
 }

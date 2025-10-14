@@ -50,6 +50,10 @@ public class Draggable : MonoBehaviour
     [Tooltip("Геймпад: скорость изменения масштаба")]
     public float gamepadScaleSpeed = 2f;
 
+    [Header("Mass Label")]
+    public GameObject massLabelPrefab; // сюда перетащи MassLabel.prefab из проекта
+    private GameObject spawnedMassLabel;
+
     private Vector3 targetScale;
     private float targetMass;
     private float scaleMultiplier = 1.05f;
@@ -154,6 +158,12 @@ public class Draggable : MonoBehaviour
         {
             SetCollisionWithPlayer(false);
         }
+
+        if (massLabelPrefab != null && spawnedMassLabel == null)
+        {
+            spawnedMassLabel = Instantiate(massLabelPrefab, transform.position, Quaternion.identity);
+            spawnedMassLabel.GetComponent<MassLabel>().Initialize(rb);
+        }
     }
 
     // При передвижении мыши меняем позицию jointна позицию мышки
@@ -170,6 +180,20 @@ public class Draggable : MonoBehaviour
     void OnMouseUp()
     {
         ReleaseObject();
+
+        if (spawnedMassLabel != null)
+        {
+            MassLabel label = spawnedMassLabel.GetComponent<MassLabel>();
+            if (label != null)
+            {
+                label.FadeOutAndDestroy();
+            }
+            else
+            {
+                Destroy(spawnedMassLabel); // на случай, если что-то пошло не так
+            }
+            spawnedMassLabel = null;
+        }
     }
 
     // Отпускаем объект мышкой
@@ -194,6 +218,12 @@ public class Draggable : MonoBehaviour
         if (collisionMode == CollisionMode.DisableWhenHeld)
         {
             SetCollisionWithPlayer(true);
+        }
+
+        if (spawnedMassLabel != null)
+        {
+            Destroy(spawnedMassLabel);
+            spawnedMassLabel = null;
         }
     }
 

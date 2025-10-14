@@ -55,6 +55,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -76,6 +78,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -116,11 +119,12 @@ MonoBehaviour:
   scaleSpeed: 5
   massSpeed: 3
   minScale: 1
-  maxScale: 5
+  maxScale: 3
   minMass: 5
   maxMass: 55
   gamepadScaleStep: 2
   gamepadScaleSpeed: 2
+  massLabelPrefab: {fileID: 271840940426286307, guid: 02042d98be356684c856e2525dc7f2be, type: 3}
 --- !u!50 &7874238932360235982
 Rigidbody2D:
   serializedVersion: 5

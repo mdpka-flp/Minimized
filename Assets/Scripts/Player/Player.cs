@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
         playerCollider = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerMat = spriteRenderer.material;
-        //rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     void Update()

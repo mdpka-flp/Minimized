@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -12,11 +12,11 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // сохраняем объект со всеми скриптами
+            DontDestroyOnLoad(gameObject); // СЃРѕС…СЂР°РЅСЏРµРј РѕР±СЉРµРєС‚ СЃРѕ РІСЃРµРјРё СЃРєСЂРёРїС‚Р°РјРё
         }
         else if (Instance != this)
         {
-            Destroy(gameObject); // убиваем дубликат целиком
+            Destroy(gameObject); // СѓР±РёРІР°РµРј РґСѓР±Р»РёРєР°С‚ С†РµР»РёРєРѕРј
         }
     }
 

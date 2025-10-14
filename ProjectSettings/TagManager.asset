@@ -8,6 +8,7 @@ TagManager:
   - Spike
   - Jumpable
   - GamepadCursor
+  - FadePanel
   layers:
   - Default
   - TransparentFX
