@@ -102,6 +102,46 @@ MonoBehaviour:
     m_Localized: Select a language
     m_Metadata:
       m_Items: []
+  - m_Id: 13632314238095360
+    m_Localized: 'Language:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13689208482877440
+    m_Localized: Maps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18353233930014720
+    m_Localized: Credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18354296355606528
+    m_Localized: Game creator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18354905427267584
+    m_Localized: Map editor development
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18355600356331520
+    m_Localized: Game design
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18368646470488064
+    m_Localized: Avatars are clickable!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18383323556532224
+    m_Localized: PAUSED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18383388945731584
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18383440560836608
+    m_Localized: Menu
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

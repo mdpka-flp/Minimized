@@ -1,34 +1,35 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 
 public class Exit : MonoBehaviour
 {
-    [Header("Телепортация")]
+    [Header("РўРµР»РµРїРѕСЂС‚Р°С†РёСЏ")]
     public bool loadNewScene = true;
+    public bool teleportCubes = false;
     public string nextSceneName = "Level2";
     public Transform teleportTarget;
 
-    [Header("Визуальные эффекты")]
+    [Header("Р’РёР·СѓР°Р»СЊРЅС‹Рµ СЌС„С„РµРєС‚С‹")]
     public Image fadePanel;
     public float fadeDuration = 0.5f;
     public float attractDuration = 0.3f;
 
-    [Header("Эффект уменьшения")]
-    [Tooltip("Минимальный масштаб игрока во время телепорта")]
+    [Header("Р­С„С„РµРєС‚ СѓРјРµРЅСЊС€РµРЅРёСЏ")]
+    [Tooltip("РњРёРЅРёРјР°Р»СЊРЅС‹Р№ РјР°СЃС€С‚Р°Р± РёРіСЂРѕРєР° РІРѕ РІСЂРµРјСЏ С‚РµР»РµРїРѕСЂС‚Р°")]
     public Vector3 minScale = new Vector3(0.2f, 0.2f, 0.2f);
-    [Tooltip("Время уменьшения (лучше = attractDuration)")]
+    [Tooltip("Р’СЂРµРјСЏ СѓРјРµРЅСЊС€РµРЅРёСЏ (Р»СѓС‡С€Рµ = attractDuration)")]
     public float shrinkDuration = 0.3f;
 
-    [Header("Состояние портала")]
+    [Header("РЎРѕСЃС‚РѕСЏРЅРёРµ РїРѕСЂС‚Р°Р»Р°")]
     public bool isOpen = false;
     public SpriteRenderer portalSprite;
 
     private bool isTeleporting = false;
     private Collider2D triggerCollider;
 
-    [Tooltip("Если 0 — работает в старом режиме: любая кнопка открывает/закрывает напрямую. Если >1 — требуется активация всех кнопок.")]
+    [Tooltip("Р•СЃР»Рё 0 вЂ” СЂР°Р±РѕС‚Р°РµС‚ РІ СЃС‚Р°СЂРѕРј СЂРµР¶РёРјРµ: Р»СЋР±Р°СЏ РєРЅРѕРїРєР° РѕС‚РєСЂС‹РІР°РµС‚/Р·Р°РєСЂС‹РІР°РµС‚ РЅР°РїСЂСЏРјСѓСЋ. Р•СЃР»Рё >1 вЂ” С‚СЂРµР±СѓРµС‚СЃСЏ Р°РєС‚РёРІР°С†РёСЏ РІСЃРµС… РєРЅРѕРїРѕРє.")]
     public int requiredButtonCount = 0;
 
     private int activeButtonCount = 0;
@@ -39,6 +40,15 @@ public class Exit : MonoBehaviour
         if (triggerCollider != null)
             triggerCollider.enabled = false;
 
+        if (isOpen)
+        {
+            OpenPortalInternal();
+        }
+        else
+        {
+            ClosePortalInternal();
+        }
+
         UpdatePortalVisuals();
     }
 
@@ -48,18 +58,22 @@ public class Exit : MonoBehaviour
         {
             StartCoroutine(TeleportSequence(other.transform));
         }
+        else if (other.CompareTag("Draggable") && isOpen && teleportCubes && !loadNewScene && !isTeleporting)
+        {
+            StartCoroutine(TeleportSequence(other.transform));
+        }
     }
 
     public void OpenPortal()
     {
         if (requiredButtonCount == 0)
         {
-            // Старый режим: сразу открываем
+            // РЎС‚Р°СЂС‹Р№ СЂРµР¶РёРј: СЃСЂР°Р·Сѓ РѕС‚РєСЂС‹РІР°РµРј
             OpenPortalInternal();
         }
         else
         {
-            // Новый режим: увеличиваем счётчик
+            // РќРѕРІС‹Р№ СЂРµР¶РёРј: СѓРІРµР»РёС‡РёРІР°РµРј СЃС‡С‘С‚С‡РёРє
             activeButtonCount = Mathf.Min(activeButtonCount + 1, requiredButtonCount);
             CheckPortalState();
         }
@@ -69,12 +83,12 @@ public class Exit : MonoBehaviour
     {
         if (requiredButtonCount == 0)
         {
-            // Старый режим: сразу закрываем
+            // РЎС‚Р°СЂС‹Р№ СЂРµР¶РёРј: СЃСЂР°Р·Сѓ Р·Р°РєСЂС‹РІР°РµРј
             ClosePortalInternal();
         }
         else
         {
-            // Новый режим: уменьшаем счётчик
+            // РќРѕРІС‹Р№ СЂРµР¶РёРј: СѓРјРµРЅСЊС€Р°РµРј СЃС‡С‘С‚С‡РёРє
             activeButtonCount = Mathf.Max(activeButtonCount - 1, 0);
             CheckPortalState();
         }
@@ -133,17 +147,17 @@ public class Exit : MonoBehaviour
         float elapsedAttract = 0f;
         float elapsedShrink = 0f;
 
-        // Главный цикл: одновременно притягиваем И уменьшаем
+        // Р“Р»Р°РІРЅС‹Р№ С†РёРєР»: РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ РїСЂРёС‚СЏРіРёРІР°РµРј Р СѓРјРµРЅСЊС€Р°РµРј
         float totalTime = Mathf.Max(attractDuration, shrinkDuration);
         while (elapsedAttract < totalTime)
         {
-            // Притягивание к порталу
+            // РџСЂРёС‚СЏРіРёРІР°РЅРёРµ Рє РїРѕСЂС‚Р°Р»Сѓ
             if (elapsedAttract < attractDuration)
             {
                 player.position = Vector3.Lerp(startPos, portalCenter, elapsedAttract / attractDuration);
             }
 
-            // Уменьшение масштаба
+            // РЈРјРµРЅСЊС€РµРЅРёРµ РјР°СЃС€С‚Р°Р±Р°
             if (elapsedShrink < shrinkDuration)
             {
                 elapsedShrink += Time.deltaTime;
@@ -155,11 +169,11 @@ public class Exit : MonoBehaviour
             yield return null;
         }
 
-        // Убедимся, что игрок точно в центре и в минимальном масштабе
+        // РЈР±РµРґРёРјСЃСЏ, С‡С‚Рѕ РёРіСЂРѕРє С‚РѕС‡РЅРѕ РІ С†РµРЅС‚СЂРµ Рё РІ РјРёРЅРёРјР°Р»СЊРЅРѕРј РјР°СЃС€С‚Р°Р±Рµ
         player.position = portalCenter;
         player.localScale = minScale;
 
-        // >>> ИСПРАВЛЕНИЕ: Fade только при загрузке новой сцены <<<
+        // >>> РРЎРџР РђР’Р›Р•РќРР•: Fade С‚РѕР»СЊРєРѕ РїСЂРё Р·Р°РіСЂСѓР·РєРµ РЅРѕРІРѕР№ СЃС†РµРЅС‹ <<<
         if (loadNewScene)
         {
             yield return StartCoroutine(FadeToBlack(fadeDuration));
@@ -167,7 +181,7 @@ public class Exit : MonoBehaviour
         }
         else
         {
-            // Без фейда — сразу телепортируем и восстанавливаем
+            // Р‘РµР· С„РµР№РґР° вЂ” СЃСЂР°Р·Сѓ С‚РµР»РµРїРѕСЂС‚РёСЂСѓРµРј Рё РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј
             player.position = teleportTarget.position;
             player.localScale = startScale;
 

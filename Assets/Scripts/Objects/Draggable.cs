@@ -42,21 +42,22 @@ public class Draggable : MonoBehaviour
     public float scaleSpeed = 5f;
     public float massSpeed = 5f;
     public float minScale = 1f;
-    public float maxScale = 10f;
-    public float minMass = 1f;
-    public float maxMass = 55f;
-    [Tooltip("Геймпад: уменьшение масштаба")]
-    public float gamepadScaleStep = 0.1f;
-    [Tooltip("Геймпад: скорость изменения масштаба")]
-    public float gamepadScaleSpeed = 2f;
+    public float maxScale = 2f;
+    public float minMass = 5f;
+    public float maxMass = 15f;
+    private bool isUsingProportionalScale = false; // флаг: перешли ли мы на пропорциональный режим
+    private float currentScaleFactor;
+    private float targetScaleFactor;
+    [Tooltip("How much slower scaling becomes when Ctrl is held")]
+    public float fineTuneMultiplier = 0.2f;
 
     [Header("Mass Label")]
-    public GameObject massLabelPrefab; // сюда перетащи MassLabel.prefab из проекта
+    public GameObject massLabelPrefab;
     private GameObject spawnedMassLabel;
 
-    private Vector3 targetScale;
-    private float targetMass;
-    private float scaleMultiplier = 1.05f;
+    //private Vector3 targetScale;
+    //private float targetMass;
+    //private float scaleMultiplier = 1.05f;
     //private float massMultiplier = 2.2f;
 
     void Start()
@@ -70,34 +71,37 @@ public class Draggable : MonoBehaviour
             SetCollisionWithPlayer(false);
         }
 
-        targetScale = transform.localScale;
-        targetMass = rb.mass;
+        float initialScale = transform.localScale.x;
+        float initialMass = rb.mass;
 
-        ClampScaleAndMass();
+        // Ограничиваем, но не привязываем к scaleFactor
+        initialScale = Mathf.Clamp(initialScale, minScale, maxScale);
+        initialMass = Mathf.Clamp(initialMass, minMass, maxMass);
+
+        transform.localScale = Vector3.one * initialScale;
+        rb.mass = initialMass;
+
         InitializeColor();
-
-        //rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     void Update()
     {
         if (isBeingHeld)
         {
-            float scroll = 0f;
-
-            scroll = Input.GetAxis("Mouse ScrollWheel");
-
-            // Применение изменений
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(scroll) > 0.01f)
             {
-                float scaleFactor = Mathf.Pow(scaleMultiplier, scroll * 10f);
-                Vector3 newScale = targetScale * scaleFactor;
-                float sizeRatio = newScale.x / transform.localScale.x;
+                SwitchToProportionalMode();
 
-                targetScale = newScale;
-                targetMass *= Mathf.Pow(sizeRatio, 2.5f);
+                float scrollSensitivity = scaleSpeed * 0.2f;
 
-                ClampScaleAndMass();
+                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                {
+                    scrollSensitivity *= fineTuneMultiplier;
+                }
+
+                targetScaleFactor += scroll * scrollSensitivity;
+                targetScaleFactor = Mathf.Clamp01(targetScaleFactor);
             }
         }
 
@@ -106,34 +110,47 @@ public class Draggable : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isUsingProportionalScale)
+        {
+            // Плавно интерполируем scaleFactor
+            currentScaleFactor = Mathf.Lerp(
+                currentScaleFactor,
+                targetScaleFactor,
+                scaleSpeed * Time.fixedDeltaTime
+            );
 
-        // Увеличиваем размер
-        transform.localScale = Vector3.Lerp(
-            transform.localScale,
-            targetScale,
-            scaleSpeed * Time.fixedDeltaTime
-        );
+            // Применяем пропорциональные размер и массу
+            float scale = Mathf.Lerp(minScale, maxScale, currentScaleFactor);
+            float mass = Mathf.Lerp(minMass, maxMass, currentScaleFactor);
 
-        // Увеличмваем массу
-        rb.mass = Mathf.Lerp(
-            rb.mass,
-            targetMass,
-            massSpeed * Time.fixedDeltaTime
-        );
+            transform.localScale = Vector3.one * scale;
+            rb.mass = mass;
+        }
+
+        // Если НЕ в пропорциональном режиме — ничего не делаем (оставляем как есть)
     }
 
-    // Ограничение минимальной и максимальной массы
-    private void ClampScaleAndMass()
+    private void ApplyScaleFromFactor(float factor)
     {
-        float clampedScale = Mathf.Clamp(targetScale.x, minScale, maxScale);
-        targetScale = new Vector3(clampedScale, clampedScale, clampedScale);
+        float clampedFactor = Mathf.Clamp01(factor);
+        float currentScale = Mathf.Lerp(minScale, maxScale, clampedFactor);
+        float currentMass = Mathf.Lerp(minMass, maxMass, clampedFactor);
 
-        float sizeRatio = clampedScale / transform.localScale.x;
-        targetMass = Mathf.Clamp(
-            rb.mass * Mathf.Pow(sizeRatio, 2.5f),
-            minMass,
-            maxMass
-        );
+        transform.localScale = Vector3.one * currentScale;
+        rb.mass = currentMass;
+    }
+
+    private void SwitchToProportionalMode()
+    {
+        if (isUsingProportionalScale) return;
+
+        // Вычисляем scaleFactor на основе ТЕКУЩЕГО размера
+        // (можно и на основе массы — но размер визуальнее)
+        float currentScale = transform.localScale.x;
+        currentScaleFactor = Mathf.InverseLerp(minScale, maxScale, currentScale);
+        targetScaleFactor = currentScaleFactor;
+
+        isUsingProportionalScale = true;
     }
 
     // По клику мышью на объект

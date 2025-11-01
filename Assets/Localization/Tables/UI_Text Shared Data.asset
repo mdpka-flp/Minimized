@@ -106,6 +106,46 @@ MonoBehaviour:
     m_Key: SelectLanguage
     m_Metadata:
       m_Items: []
+  - m_Id: 13632314238095360
+    m_Key: LanguageSetting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13689208482877440
+    m_Key: Button Community Maps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18353233930014720
+    m_Key: Credits title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18354296355606528
+    m_Key: mdpka
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18354905427267584
+    m_Key: Sky_Fly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18355600356331520
+    m_Key: mal1s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18368646470488064
+    m_Key: ClickableAvatars
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18383323556532224
+    m_Key: PausedText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18383388945731584
+    m_Key: ContinueGame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18383440560836608
+    m_Key: BackToMenu
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

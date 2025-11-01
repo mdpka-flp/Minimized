@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1678200584230899022}
   - component: {fileID: 3749079780067240245}
   - component: {fileID: 5538665672690097146}
+  - component: {fileID: 8345416159534719741}
   - component: {fileID: 5290071952507533804}
-  - component: {fileID: 384363368142316153}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -86,6 +86,18 @@ MonoBehaviour:
   deathClip: {fileID: 8300000, guid: f6d9695a9872c6a459d58b8504161464, type: 3}
   minPitch: 0.9
   maxPitch: 1.1
+--- !u!114 &8345416159534719741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419998672282866446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e97dc6fe7dc0d6e4b8e3417072a33c6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelProgressManager
 --- !u!82 &5290071952507533804
 AudioSource:
   m_ObjectHideFlags: 0
@@ -96,7 +108,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 5412391dadf265c479fa9268f0d4a1df, type: 2}
-  m_audioClip: {fileID: 8300000, guid: f6d9695a9872c6a459d58b8504161464, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: f6d9695a9872c6a459d58b8504161464, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -183,15 +195,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &384363368142316153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4419998672282866446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ff4ddea2f821694fb1948de27a15e8e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

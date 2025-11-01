@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro; // ���� ����������� TextMeshPro
+using TMPro;
 using UnityEngine.Localization.Settings;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -11,15 +11,18 @@ using UnityEditor;
 public class ButtonManager : MonoBehaviour
 {
     [Header("Level Generation")]
-    public GameObject levelButtonPrefab; // ������ ������
-    public Transform contentParent;      // ��������� ������ ScrollView (������ Content)
-    public int maxLevelCount = 100;      // �������� ������� ��� ��������
+    public GameObject activeLevelButtonPrefab;   // Рабочая кнопка
+    public GameObject lockedLevelButtonPrefab;   // Кнопка с замком
+    public Transform contentParent;      // Сюда кнопки генерировать
     public GameObject LevelsPanel;
     public GameObject SettingsPanel;
     public GameObject ExitPanel;
     public GameObject LanguagePanel;
+    public TextMeshProUGUI langButton;
 
-    // ������������ ������
+    private int currentLocaleIndex = 0;
+
+    // Существующие методы
     public void Play()
     {
         LevelsPanel.SetActive(true);
@@ -55,53 +58,116 @@ public class ButtonManager : MonoBehaviour
 
     private void GenerateLevelButtons()
     {
-        int columns = 4;
-        float startX = -370f;
-        float startY = 115f;
-        float stepX = 250f;
-        float stepY = 230f;
-
-        int row = 0;
-        int col = 0;
-
-        for (int i = 1; i <= maxLevelCount; i++)
+        // Очистка старых кнопок
+        foreach (Transform child in contentParent)
         {
-            string levelName = "Lvl" + i;
+            Destroy(child.gameObject);
+        }
 
-            if (IsSceneInBuild(levelName))
+        HashSet<int> unlockedLevels = LevelProgressManager.LoadUnlockedLevels();
+
+        // Собираем все подходящие уровни из Build Settings
+        List<(int levelNumber, string sceneName)> validLevels = new List<(int, string)>();
+
+        int sceneCount = SceneManager.sceneCountInBuildSettings;
+        for (int i = 0; i < sceneCount; i++)
+        {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneName = System.IO.Path.GetFileNameWithoutExtension(path);
+
+            if (sceneName.StartsWith("Lvl", System.StringComparison.OrdinalIgnoreCase))
             {
-                GameObject newButton = Instantiate(levelButtonPrefab, contentParent);
-
-                // ��������� ������� � ��������� �����������
-                RectTransform rt = newButton.GetComponent<RectTransform>();
-                if (rt != null)
+                string numberPart = sceneName.Substring(3);
+                if (int.TryParse(numberPart, out int levelNum) && levelNum > 0)
                 {
-                    float posX = startX + stepX * col;
-                    float posY = startY - stepY * row;
-                    rt.anchoredPosition = new Vector2(posX, posY);
-                }
-
-                // ��������� �����
-                TMP_Text buttonText = newButton.GetComponentInChildren<TMP_Text>();
-                if (buttonText != null)
-                    buttonText.text = levelName;
-
-                // ������ ��������� ������ �������
-                Button btn = newButton.GetComponent<Button>();
-                if (btn != null)
-                {
-                    string capturedLevelName = levelName;
-                    btn.onClick.AddListener(() => LoadLevel(capturedLevelName));
-                }
-
-                // ���������� ������� � ������
-                col++;
-                if (col >= columns)
-                {
-                    col = 0;
-                    row++;
+                    validLevels.Add((levelNum, sceneName));
                 }
             }
+        }
+
+        // Сортируем по номеру уровня
+        validLevels.Sort((a, b) => a.levelNumber.CompareTo(b.levelNumber));
+
+        // Параметры размещения — теперь с учётом 1000px ширины
+        const int levelsInRow = 4;
+        const float buttonWidth = 150f;
+        const float buttonHeight = 150f;
+        const float offsetX = 250f; // Шаг по X — чтобы 4 кнопки заняли 750px
+        const float offsetY = 200f; // Шаг по Y
+        const float startX = -875f; // Центрирование: 3×250=750 → отступ слева 125px → -375
+        const float startY = 180f;  // Начальная Y позиция — чуть ниже, чтобы не уезжали вверх
+
+        // Создаём кнопки
+        for (int i = 0; i < validLevels.Count; i++)
+        {
+            var (levelNum, sceneName) = validLevels[i];
+            bool isUnlocked = unlockedLevels.Contains(levelNum);
+            GameObject prefabToUse = isUnlocked ? activeLevelButtonPrefab : lockedLevelButtonPrefab;
+            GameObject buttonObj = Instantiate(prefabToUse, contentParent);
+
+            // Устанавливаем текст
+            var textComponent = buttonObj.GetComponentInChildren<Text>();
+            if (textComponent != null)
+            {
+                textComponent.text = "Lvl " + levelNum;
+            }
+            else
+            {
+                var tmp = buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+                if (tmp != null)
+                {
+                    tmp.text = "Lvl " + levelNum;
+                }
+            }
+
+            // Настраиваем кликабельность
+            var button = buttonObj.GetComponent<Button>();
+            if (button != null)
+            {
+                if (isUnlocked)
+                {
+                    button.interactable = true;
+                    string capturedScene = sceneName;
+                    button.onClick.AddListener(() => LoadLevel(capturedScene));
+                }
+                else
+                {
+                    button.interactable = false;
+                }
+            }
+
+            // Позиционируем через anchoredPosition
+            int row = i / levelsInRow;
+            int col = i % levelsInRow;
+            float posX = startX + col * offsetX;
+            float posY = startY - row * offsetY;
+
+            RectTransform buttonRect = buttonObj.GetComponent<RectTransform>();
+            if (buttonRect != null)
+            {
+                buttonRect.anchoredPosition = new Vector2(posX, posY);
+                buttonRect.sizeDelta = new Vector2(buttonWidth, buttonHeight);
+                buttonRect.localScale = Vector3.one;
+            }
+        }
+
+        // Обновляем размер контента для Scroll View
+        UpdateContentSize(validLevels.Count, levelsInRow, offsetX, offsetY);
+    }
+
+    // Метод для обновления размера контента Scroll View
+    private void UpdateContentSize(int totalButtons, int levelsInRow, float offsetX, float offsetY)
+    {
+        if (contentParent == null) return;
+
+        int rows = Mathf.CeilToInt((float)totalButtons / levelsInRow);
+        float contentWidth = levelsInRow * offsetX;
+        float contentHeight = rows * offsetY;
+
+        RectTransform contentRect = contentParent.GetComponent<RectTransform>();
+        if (contentRect != null)
+        {
+            contentRect.sizeDelta = new Vector2(contentWidth, contentHeight);
         }
     }
 
@@ -121,9 +187,20 @@ public class ButtonManager : MonoBehaviour
 
     private void ClearLevelButtons()
     {
+        // Собираем все дочерние объекты в список, чтобы не модифицировать коллекцию во время итерации
+        List<GameObject> children = new List<GameObject>();
         foreach (Transform child in contentParent)
         {
-            Destroy(child.gameObject);
+            children.Add(child.gameObject);
+        }
+
+        // Уничтожаем в конце кадра — чтобы избежать MissingReferenceException
+        foreach (var child in children)
+        {
+            if (child != null)
+            {
+                Destroy(child);
+            }
         }
     }
 
@@ -147,16 +224,57 @@ public class ButtonManager : MonoBehaviour
         LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[1];
     }
 
-    public void SwitchLanguage(int index)
+    public void SwitchLanguage()
     {
-        switch (index)
+        var locales = LocalizationSettings.AvailableLocales.Locales;
+        if (locales == null || locales.Count == 0)
+            return;
+
+        // Переключаем на следующую локаль (циклически)
+        currentLocaleIndex = (currentLocaleIndex + 1) % locales.Count;
+        LocalizationSettings.SelectedLocale = locales[currentLocaleIndex];
+
+        // Обновляем текст кнопки
+        if (langButton != null)
         {
-            case 0:
-                SwitchToEnglish();
-                break;
-            case 1:
-                SwitchToRussian();
-                break;
+            langButton.text = currentLocaleIndex == 0 ? "English" : "Русский";
         }
+    }
+
+    public void mdpka()
+    {
+        Application.OpenURL("https://t.me/mdpkaaa");
+    }
+    public void SkyFly()
+    {
+        
+    }
+    public void malis()
+    {
+        Application.OpenURL("https://t.me/snow_shaark");
+    }
+
+    private void Start()
+    {
+        var locales = LocalizationSettings.AvailableLocales.Locales;
+        if (locales != null && locales.Count > 0)
+        {
+            currentLocaleIndex = locales.IndexOf(LocalizationSettings.SelectedLocale);
+            if (currentLocaleIndex == -1)
+                currentLocaleIndex = 0; // fallback на первый язык
+
+            // Обновляем текст кнопки при запуске
+            if (langButton != null)
+            {
+                langButton.text = currentLocaleIndex == 0 ? "English" : "Русский";
+            }
+        }
+        else
+        {
+            // На случай, если локали ещё не загружены (редко, но бывает)
+            if (langButton != null)
+                langButton.text = "English";
+        }
+        GenerateLevelButtons();
     }
 }

@@ -27,13 +27,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 572010498135645623}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.38268343, w: 0.92387956}
   m_LocalPosition: {x: 15.28, y: -1.49, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 45}
 --- !u!212 &8668782567310528395
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -105,6 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadNewScene: 1
+  teleportCubes: 0
   nextSceneName: Lvl2
   teleportTarget: {fileID: 0}
   fadePanel: {fileID: 0}
@@ -114,6 +115,7 @@ MonoBehaviour:
   shrinkDuration: 0.5
   isOpen: 0
   portalSprite: {fileID: 8668782567310528395}
+  requiredButtonCount: 0
 --- !u!61 &2117891323033767455
 BoxCollider2D:
   m_ObjectHideFlags: 0
