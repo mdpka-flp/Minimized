@@ -16,7 +16,7 @@
 
 ## 📥 Скачать игру
 
-🎮 **Игра находится в разработке** — следите за 
+🎮 **Игра находится в разработке** — следите за разработкой в моём [Telegram](https://t.me/mdpkaaa) канале
 
 [![GameJolt](https://img.shields.io/badge/GameJolt-Play-orange?style=for-the-badge&logo=gamejolt)](https://gamejolt.com/games/minimized/1026019)
 
