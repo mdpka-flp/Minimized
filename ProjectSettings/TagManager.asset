@@ -18,8 +18,8 @@ TagManager:
   - UI
   - Draggable
   - Player
-  - Ground
-  - 
+  - Wall
+  - Object
   - 
   - LevelEditor
   - 

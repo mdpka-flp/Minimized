@@ -14,10 +14,10 @@ public class ButtonTrigger : MonoBehaviour
 
     [Header("Activation Settings")]
     public LayerMask activatorLayers;
-    [Tooltip("Минимальная и максимальная масса объекта для активации (0 = любая масса)")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (0 = пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)")]
     public float minMass = 0f;
     public float maxMass = 10;
-    [Tooltip("Теги объектов для активации (пусто = все)")]
+    [Tooltip("пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ = пїЅпїЅпїЅ)")]
     public List<string> activatorTags = new List<string>();
 
     [Header("Color Requirements")]
@@ -101,7 +101,7 @@ public class ButtonTrigger : MonoBehaviour
         if (activatorTags.Count > 0 && !activatorTags.Contains(col.tag))
             return false;
 
-        // Новая проверка по цвету
+        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         Draggable draggable = col.GetComponent<Draggable>();
         if (draggable != null && allowedColors.Count > 0 && !allowedColors.Contains(draggable.itsColor))
             return false;

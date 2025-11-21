@@ -1998,6 +1998,10 @@ PrefabInstance:
       value: Lvl4
       objectReference: {fileID: 0}
     - target: {fileID: 637692282260337416, guid: 5e2f78a9bd080ed4cb1644ceb19b459f, type: 3}
+      propertyPath: teleportCubes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 637692282260337416, guid: 5e2f78a9bd080ed4cb1644ceb19b459f, type: 3}
       propertyPath: teleportTarget
       value: 
       objectReference: {fileID: 1030070399}
@@ -4274,7 +4278,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 637692282260337416, guid: 5e2f78a9bd080ed4cb1644ceb19b459f, type: 3}
       propertyPath: nextSceneName
-      value: Lvl8
+      value: Lvl9
       objectReference: {fileID: 0}
     - target: {fileID: 637692282260337416, guid: 5e2f78a9bd080ed4cb1644ceb19b459f, type: 3}
       propertyPath: teleportCubes

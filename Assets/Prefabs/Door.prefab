@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4705430321120353092}
   - component: {fileID: 5360348272662888963}
   - component: {fileID: 2398406925355357234}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,6 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Door
   direction: 1
   doorMode: 1
+  isOpen: 0
   closedScale: 3
   openedScale: 0
   pos: 1
